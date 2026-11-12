@@ -42,7 +42,7 @@ function AppRouter() {
       <Routes>
         <Route path="/login" element={<Login />} />
 
-        {/* Only protected (after login, can access) */}
+        
         <Route
           path="/"
           element={
