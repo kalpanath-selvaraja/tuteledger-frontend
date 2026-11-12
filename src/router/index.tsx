@@ -1,8 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import type { ReactNode } from "react"
 import Login from "../pages/Login"
+import NotFound from "../pages/NotFound"
+import Layout from "../components/Layout"
 import Home from "../pages/Home"
 import useAuth from "../hooks/useAuth"
+import Classes from "../pages/Classes"
 
 type RequireAuthTypes = {
   children: ReactNode
@@ -26,23 +29,24 @@ const RequireAuth = ({ children, roles }: RequireAuthTypes) => {
 
   if (roles && !roles.includes(user.role)) {
     return (
-      <div className="text-center py-20">
-        <h2 className="text-xl font-bold mb-2">Access Denied</h2>
-        <p>You do not have permission to view this page.</p>
-      </div>
+      <Layout>
+        <div className="text-center py-20">
+          <h2 className="text-xl font-bold mb-2">Access Denied</h2>
+          <p>You do not have permission to view this page.</p>
+        </div>
+      </Layout>
     )
   }
 
-  return <>{children}</>
+  return <Layout>{children}</Layout>
 }
 
 function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/Login" element={<Login />} />
 
-        
         <Route
           path="/"
           element={
@@ -51,6 +55,17 @@ function AppRouter() {
             </RequireAuth>
           }
         />
+
+        <Route
+          path="/classes"
+          element={
+            <RequireAuth>
+              <Classes />
+            </RequireAuth>
+          }
+        />
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   )
