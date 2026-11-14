@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState, type ReactNode } from "react"
 import { getMyDetails } from "../service/auth"
 
+
 export type User = {
   id: string
   name: string
@@ -8,10 +9,13 @@ export type User = {
   role: "tutor" | "receptionist"
 }
 
-type AuthContextTypes = {
+export type AuthContextTypes = {
   user: User | null
   setUser: (user: User | null) => void
-  loading: boolean
+  // showLoader: () => void
+  // hideLoader: () => void
+  // isLoading: boolean
+  loading:boolean
 }
 
 export const AuthContext = createContext<AuthContextTypes | null>(null)
@@ -23,10 +27,16 @@ type AuthProviderTypes = {
 const AuthProvider = ({ children }: AuthProviderTypes) => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  // const [isLoading, setIsLoading] = useState(true)
+
+  // const  showLoader = () => setIsLoading(true)
+  // const  hideLoader = () => setIsLoading(false)
+
 
   useEffect(() => {
     const accessToken = localStorage.getItem("ACCESS_TOKEN")
     if (accessToken) {
+      // setIsLoading(true)
       setLoading(true)
       getMyDetails()
         .then((res) => {
@@ -50,7 +60,15 @@ const AuthProvider = ({ children }: AuthProviderTypes) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={
+      { 
+        user, 
+        setUser, 
+        loading
+        // showLoader, 
+        // hideLoader, 
+        // isLoading 
+      }}>
       {children}
     </AuthContext.Provider>
   )
