@@ -6,6 +6,8 @@ import Layout from "../components/Layout"
 import Home from "../pages/Home"
 import useAuth from "../hooks/useAuth"
 import Classes from "../pages/Classes"
+import Students from "../pages/Students"
+
 
 type RequireAuthTypes = {
   children: ReactNode
@@ -61,6 +63,15 @@ function AppRouter() {
           element={
             <RequireAuth>
               <Classes />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/students"
+          element={
+            <RequireAuth>
+              <Students />
             </RequireAuth>
           }
         />
