@@ -14,11 +14,17 @@ function NavBar() {
     <nav className="bg-white border-b border-slate-200">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-6">
+          
           <Link to="/" className="text-lg font-semibold text-slate-900">
             TuteLedger
           </Link>
+
           <Link to="/classes" className="text-slate-700 hover:text-blue-600">
             Classes
+          </Link>
+
+          <Link to="/students" className="text-slate-700 hover:text-blue-600">
+            Students
           </Link>
         </div>
 
