@@ -33,6 +33,7 @@ function Classes() {
   const [startTime, setStartTime] = useState("")
   const [fee, setFee] = useState("")
   const [active, setActive] = useState(true)
+  const [showInputs, setShowInputs] = useState(false);
 
   const loadClasses = async () => {
     try {
@@ -58,6 +59,7 @@ function Classes() {
     setStartTime("")
     setFee("")
     setActive(true)
+    setShowInputs(false)
   }
 
   const handleEdit = (c: ClassItem) => {
@@ -68,6 +70,7 @@ function Classes() {
     setStartTime(c.startTime)
     setFee(String(c.monthlyFeeLKR))
     setActive(c.active)
+    setShowInputs(true)
   }
 
   const handleSubmit = async () => {
@@ -102,12 +105,34 @@ function Classes() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-xl font-semibold text-slate-900">Classes</h1>
+    <div className="flex flex-col gap-6 rounded-xl bg-stone-50 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="font-serif text-4xl tracking-tight text-emerald-950 md:text-5xl">
+            Classes
+          </h1>
+          <p className="mt-1 text-sm text-slate-600">
+            {classes.length} {classes.length === 1 ? "class" : "classes"} &middot;{" "}
+            {classes.filter((c) => c.active).length} active
+          </p>
+        </div>
 
-      {isTutor && (
-        <div className="bg-white border border-slate-200 rounded-lg p-4 flex flex-col gap-3">
-          <h2 className="font-semibold text-slate-900">
+        {isTutor && (
+          <button
+            className="rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-900"
+            onClick={() => {
+              resetForm()
+              setShowInputs(true)
+            }}
+          >
+            + Add class
+          </button>
+        )}
+      </div>
+
+      {isTutor && showInputs && (
+        <div className="bg-white border border-emerald-100 rounded-lg p-4 flex flex-col gap-3">
+          <h2 className="font-semibold text-emerald-950">
             {editingId ? "Edit class" : "Add a class"}
           </h2>
 
@@ -117,19 +142,19 @@ function Classes() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             />
             <input
               placeholder="subject"
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             />
             <select
               value={dayOfWeek}
               onChange={(e) => setDayOfWeek(e.target.value)}
-              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             >
               {DAYS.map((day) => {
                 return (
@@ -143,14 +168,14 @@ function Classes() {
               type="time"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
-              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             />
             <input
               placeholder="monthly fee (LKR)"
               type="number"
               value={fee}
               onChange={(e) => setFee(e.target.value)}
-              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             />
             {editingId && (
               <label className="flex items-center gap-2 text-slate-700">
@@ -166,66 +191,89 @@ function Classes() {
 
           <div className="flex gap-2">
             <button
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+              className="px-4 py-2 bg-emerald-800 text-white rounded-lg hover:bg-emerald-900 transition"
               onClick={handleSubmit}
             >
               {editingId ? "Save changes" : "Add class"}
             </button>
-            {editingId && (
+            
               <button
-                className="px-4 py-2 border rounded-lg text-slate-700 hover:bg-slate-50 transition"
+                className="px-4 py-2 border rounded-lg text-slate-700 hover:bg-emerald-50 transition"
                 onClick={resetForm}
               >
                 Cancel
               </button>
-            )}
+            
           </div>
         </div>
       )}
 
-      <div className="bg-white border border-slate-200 rounded-lg overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-slate-600">
+      <div className="overflow-x-auto rounded-xl border border-[#d8e1d7] bg-white">
+        <table className="w-full border-collapse text-left text-sm text-[#172c24]">
+          <thead className="bg-[#edf3e9] text-xs text-[#3f5749]">
             <tr>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Subject</th>
-              <th className="px-4 py-2">Day</th>
-              <th className="px-4 py-2">Time</th>
-              <th className="px-4 py-2">Fee (LKR)</th>
-              <th className="px-4 py-2">Status</th>
-              {isTutor && <th className="px-4 py-2"></th>}
+              <th scope="col" className="px-4 py-3">Class</th>
+              <th scope="col" className="px-4 py-3">Schedule</th>
+              <th scope="col" className="whitespace-nowrap px-4 py-3 text-right">Monthly fee</th>
+              <th scope="col" className="px-4 py-3">Status</th>
+              {isTutor && <th scope="col" aria-label="Actions" />}
             </tr>
           </thead>
+
           <tbody>
             {loading && (
               <tr>
-                <td className="px-4 py-3 text-slate-500" colSpan={7}>
+                <td colSpan={isTutor ? 5 : 4} className="px-4 py-3 text-slate-600">
                   Loading...
                 </td>
               </tr>
             )}
+
             {!loading && classes.length === 0 && (
               <tr>
-                <td className="px-4 py-3 text-slate-500" colSpan={7}>
+                <td colSpan={isTutor ? 5 : 4} className="px-4 py-3 text-slate-600">
                   No classes yet.
                 </td>
               </tr>
             )}
+
             {classes.map((c) => {
+              const [hour, minute] = c.startTime.split(":")
+              const hourNumber = Number(hour)
+              const time = minute?.length === 2 && hourNumber >= 0 && hourNumber < 24
+                ? `${hourNumber % 12 || 12}:${minute} ${hourNumber < 12 ? "AM" : "PM"}`
+                : c.startTime
+
               return (
-                <tr key={c.id} className="border-t border-slate-100">
-                  <td className="px-4 py-2">{c.name}</td>
-                  <td className="px-4 py-2">{c.subject}</td>
-                  <td className="px-4 py-2">{c.dayOfWeek}</td>
-                  <td className="px-4 py-2">{c.startTime}</td>
-                  <td className="px-4 py-2">{c.monthlyFeeLKR.toLocaleString()}</td>
+                <tr key={c.id} className="border-t border-[#e3e9e0]">
                   <td className="px-4 py-2">
-                    {c.active ? "Active" : "Inactive"}
+                    <p className="font-bold">{c.name}</p>
+                    <p className="text-xs text-[#506259]">{c.subject}</p>
                   </td>
+
+                  <td className="whitespace-nowrap px-4 py-2">
+                    {c.dayOfWeek} &middot; {time}
+                  </td>
+
+                  <td className="whitespace-nowrap px-4 py-2 text-right tabular-nums">
+                    Rs. {c.monthlyFeeLKR.toLocaleString()}
+                  </td>
+
+                  <td className="px-4 py-2">
+                    <span className={
+                      "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] font-semibold " +
+                      (c.active ? "bg-[#e7f2e5] text-[#315740]" : "bg-[#f1f0eb] text-[#59574d]")
+                    }>
+                      <span aria-hidden="true" className="h-[5px] w-[5px] rounded-full bg-current" />
+                      {c.active ? "Active" : "Inactive"}
+                    </span>
+                  </td>
+
                   {isTutor && (
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2 text-right">
                       <button
-                        className="text-blue-600 hover:underline"
+                        type="button"
+                        className="rounded-lg px-2.5 py-2 font-semibold text-[#255740] hover:bg-[#edf3e9]"
                         onClick={() => handleEdit(c)}
                       >
                         Edit
