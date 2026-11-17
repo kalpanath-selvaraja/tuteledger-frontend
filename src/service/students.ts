@@ -38,3 +38,8 @@ export const updateStudent = async (id: string, input: StudentInput) => {
   const res = await api.put(`/students/${id}`, input)
   return res.data
 }
+
+export const getStudentById = async (id: string) => {
+  const res = await api.get(`/students/${id}`)
+  return res.data
+}
