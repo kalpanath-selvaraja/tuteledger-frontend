@@ -10,6 +10,7 @@ import {
   type StudentInput,
   type StudentPage
 } from "../service/students"
+import { Link } from "react-router-dom"
 
 const PAGE_SIZE = 10
 
@@ -96,12 +97,19 @@ function Students() {
     try {
       if (editingId) {
         await updateStudent(editingId, input)
+      
       } else {
+      
         await createStudent(input)
+      
       }
+
       resetForm()
+
       await loadStudents(page, appliedSearch)
+
     } catch (err) {
+
       console.error(err)
       if (axios.isAxiosError(err) && err.response?.data?.errors) {
         alert(err.response.data.errors.join("\n"))
@@ -232,7 +240,11 @@ function Students() {
             {students.map((s) => {
               return (
                 <tr key={s.id} className="border-t border-slate-100">
-                  <td className="px-4 py-2">{s.name}</td>
+                  <td className="px-4 py-2">
+                    <Link to={`/students/${s.id}`} className="text-blue-600 hover:underline">
+                      {s.name}
+                    </Link>
+                  </td>
                   <td className="px-4 py-2">{s.guardianName}</td>
                   <td className="px-4 py-2">{s.phone}</td>
                   <td className="px-4 py-2">
