@@ -7,6 +7,7 @@ import Home from "../pages/Home"
 import useAuth from "../hooks/useAuth"
 import Classes from "../pages/Classes"
 import Students from "../pages/Students"
+import StudentDetail from "../pages/StudentDetail"
 
 
 type RequireAuthTypes = {
@@ -72,6 +73,15 @@ function AppRouter() {
           element={
             <RequireAuth>
               <Students />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/students/:id"
+          element={
+            <RequireAuth>
+              <StudentDetail />
             </RequireAuth>
           }
         />
