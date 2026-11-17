@@ -123,9 +123,9 @@ function Students() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-xl font-semibold text-slate-900">Students</h1>
+      <h1 className="text-2xl font-bold text-emerald-950">Students</h1>
 
-      <div className="bg-white border border-slate-200 rounded-lg p-4 flex flex-col gap-3">
+      <div className="bg-white border border-emerald-100 rounded-lg p-4 flex flex-col gap-3">
         <h2 className="font-semibold text-slate-900">
           {editingId ? "Edit student" : "Add a student"}
         </h2>
@@ -136,27 +136,27 @@ function Students() {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
           />
           <input
             placeholder="guardian name"
             type="text"
             value={guardianName}
             onChange={(e) => setGuardianName(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
           />
           <input
             placeholder="phone, for example 0771234567"
             type="text"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
           />
           {editingId && isTutor && (
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as "active" | "inactive")}
-              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -166,14 +166,14 @@ function Students() {
 
         <div className="flex gap-2">
           <button
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+            className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
             onClick={handleSubmit}
           >
             {editingId ? "Save changes" : "Add student"}
           </button>
           {editingId && (
             <button
-              className="px-4 py-2 border rounded-lg text-slate-700 hover:bg-slate-50 transition"
+              className="px-4 py-2 border rounded-lg text-slate-700 hover:bg-emerald-50 transition"
               onClick={resetForm}
             >
               Cancel
@@ -182,7 +182,7 @@ function Students() {
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <input
           placeholder="search by name"
           type="text"
@@ -193,27 +193,29 @@ function Students() {
               handleSearch()
             }
           }}
-          className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full sm:flex-1 px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
         />
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-          onClick={handleSearch}
-        >
-          Search
-        </button>
-        {appliedSearch && (
+        <div className="flex gap-2">
           <button
-            className="px-4 py-2 border rounded-lg text-slate-700 hover:bg-slate-50 transition"
-            onClick={handleClearSearch}
+            className="flex-1 sm:flex-none px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
+            onClick={handleSearch}
           >
-            Clear
+            Search
           </button>
-        )}
+          {appliedSearch && (
+            <button
+              className="flex-1 sm:flex-none px-4 py-2 border rounded-lg bg-white text-slate-700 hover:bg-emerald-50 transition"
+              onClick={handleClearSearch}
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-lg overflow-x-auto">
+      <div className="bg-white border border-emerald-100 rounded-lg overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-slate-600">
+          <thead className="bg-emerald-100 text-emerald-900">
             <tr>
               <th className="px-4 py-2">Name</th>
               <th className="px-4 py-2">Guardian</th>
@@ -239,20 +241,27 @@ function Students() {
             )}
             {students.map((s) => {
               return (
-                <tr key={s.id} className="border-t border-slate-100">
-                  <td className="px-4 py-2">
-                    <Link to={`/students/${s.id}`} className="text-blue-600 hover:underline">
+                <tr key={s.id} className="border-t border-emerald-50">
+                  <td className="px-4 py-2 whitespace-nowrap">
+                    <Link to={`/students/${s.id}`} className="text-emerald-700 hover:underline">
                       {s.name}
                     </Link>
                   </td>
                   <td className="px-4 py-2">{s.guardianName}</td>
                   <td className="px-4 py-2">{s.phone}</td>
                   <td className="px-4 py-2">
-                    {s.status === "active" ? "Active" : "Inactive"}
+                    <span
+                      className={
+                        "rounded-full px-2.5 py-1 text-xs font-semibold " +
+                        (s.status === "active" ? "bg-emerald-100 text-emerald-800" : "bg-stone-200 text-stone-700")
+                      }
+                    >
+                      {s.status === "active" ? "Active" : "Inactive"}
+                    </span>
                   </td>
                   <td className="px-4 py-2">
                     <button
-                      className="text-blue-600 hover:underline"
+                      className="text-emerald-700 hover:underline"
                       onClick={() => handleEdit(s)}
                     >
                       Edit
@@ -265,20 +274,20 @@ function Students() {
         </table>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-slate-700">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-slate-700">
         <span>
           {total} students, page {page} of {Math.max(totalPages, 1)}
         </span>
         <div className="flex gap-2">
           <button
-            className="px-3 py-1 border rounded-lg hover:bg-slate-50 transition disabled:opacity-50"
+            className="px-3 py-1 border rounded-lg hover:bg-emerald-50 transition disabled:opacity-50"
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
           >
             Previous
           </button>
           <button
-            className="px-3 py-1 border rounded-lg hover:bg-slate-50 transition disabled:opacity-50"
+            className="px-3 py-1 border rounded-lg hover:bg-emerald-50 transition disabled:opacity-50"
             disabled={page >= totalPages}
             onClick={() => setPage(page + 1)}
           >
