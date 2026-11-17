@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState ,  } from "react"
 import { login } from "../service/auth"
 
 function Login() {
@@ -6,6 +6,7 @@ function Login() {
   const [password, setPassword] = useState("")
 
   const handleLogin = async () => {
+    // event.preventDefault()
     if (!email || !password) {
       return alert("Please fill all fields..!")
     }
@@ -29,34 +30,53 @@ function Login() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <div className="flex flex-col gap-4 w-80">
-        <h1 className="text-2xl font-semibold">TuteLedger Login</h1>
+    <div className="flex flex-col md:flex-row min-h-screen w-full">
+      {/* left side login */}
+      <div className="flex flex-col items-center  w-full md:w-1/2 min-h-screen bg-stone-50 p-8">
+        <div className="flex items-center gap-3 self-start">
+          
+          <img src="/tutor-ledger-logo.png" alt="" className="h-10 w-10" />
 
-        <input
-          placeholder="email"
-          type="text"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <input
-          placeholder="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+          <span className="text-[21px] font-bold">Tutor Ledger</span>
+        </div>
+        
+        <div className="my-auto flex w-full max-w-[380px] flex-col gap-4 py-10">
+          <h1 className="text-[47px] md:text-[58px] font-bold tracking-tighter">
+            Sign in
+          </h1>
 
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-          onClick={handleLogin}
-        >
-          Login
-        </button>
+          <input id="email"
+            placeholder="email"
+            type="text"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="px-4 py-2 h-[54px] border rounded-[10px] focus:outline-none focus:ring-2 focus:ring-emerald-600"
+          />
+          <input
+            placeholder="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="px-4 py-2 h-[54px] border rounded-[10px] focus:outline-none focus:ring-2 focus:ring-emerald-600"
+          />
+
+          <button
+            className="px-4 py-2 bg-emerald-800 text-white rounded-lg hover:bg-emerald-900 transition"
+            onClick={handleLogin}
+          >
+            Login
+          </button>
+        </div>
+      </div>
+
+      {/* Right Side */}
+      <div className="hidden md:flex flex-col items-center justify-center w-1/2 min-h-screen bg-emerald-950 text-white p-8">
+        <h2 className="text-3xl font-bold">Welcome to TuteLedger</h2>
+
+        <img src="/tutor-lesson.png"  alt="A tutor helping a student with a workbook" className="mt-6 w-full max-w-lg rounded-lg" />
       </div>
     </div>
-  )
+  );
 }
 
 export default Login
