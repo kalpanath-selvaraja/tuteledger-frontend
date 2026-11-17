@@ -26,6 +26,9 @@ function NavBar() {
           <Link to="/students" className="text-slate-700 hover:text-blue-600">
             Students
           </Link>
+
+          
+          
         </div>
 
         <div className="flex items-center gap-3 text-sm text-slate-700">
