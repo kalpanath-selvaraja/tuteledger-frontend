@@ -6,6 +6,7 @@ import { getStudentById, type Student } from "../service/students"
 import { getClasses, type ClassItem } from "../service/classes"
 import {getEnrollments,createEnrollment, updateEnrollment, type Enrollment } from "../service/enrollments"
 import Ledger from "../components/Ledger"
+import PageSkeleton from "../components/PageSkeleton"
 
 function StudentDetail() {
   const { id } = useParams()
@@ -106,7 +107,7 @@ function StudentDetail() {
   }
 
   if (loading) {
-    return <p className="text-slate-500">Loading...</p>
+    return <PageSkeleton/>
   }
 
   if (!student) {

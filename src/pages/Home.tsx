@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import useAuth from "../hooks/useAuth"
 import { getClasses, type ClassItem } from "../service/classes"
 import { getStudents } from "../service/students"
+import PageSkeleton from "../components/PageSkeleton"
 
 // Today's weekday in Sri Lanka time, in the same words the classes part   use ("Monday")
 const getToday = () => {
@@ -33,7 +34,7 @@ function Home() {
   }, [])
 
   if (loading) {
-    return <p className="text-slate-500">Loading...</p>
+    return <PageSkeleton />
   }
 
   const today = getToday()

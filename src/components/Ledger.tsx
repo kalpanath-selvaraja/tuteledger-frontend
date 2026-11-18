@@ -3,6 +3,7 @@ import { showError } from "../utils/showError"
 import { dateLabel, getLedger, money, monthLabel, type Ledger as LedgerData, type Receipt } from "../service/ledger"
 import { downloadReceipt, downloadStatement } from "../service/pdf"
 import { createPayment, createWaiver, voidPayment } from "../service/payments"
+import Skeleton from "./Skeleton"
 
 type LedgerProps = {
   studentId: string
@@ -128,7 +129,16 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
   }
 
   if (loading) {
-    return <p className="text-slate-500">Loading ledger...</p>
+    return (
+      <div role="status" aria-label="Loading ledger" className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Skeleton className="h-20" />
+          <Skeleton className="h-20" />
+          <Skeleton className="h-20" />
+        </div>
+        <Skeleton className="h-48 w-full" />
+      </div>
+    )
   }
 
   if (!ledger) {

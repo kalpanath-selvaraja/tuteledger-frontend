@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { showError } from "../utils/showError"
 import useAuth from "../hooks/useAuth"
+import Skeleton from "../components/Skeleton"
 
 import {
   getStudents,
@@ -218,12 +219,14 @@ function Students() {
             </tr>
           </thead>
           <tbody>
-            {loading && (
-              <tr>
-                <td className="px-4 py-3 text-slate-500" colSpan={5}>
-                  Loading...
-                </td>
-              </tr>
+            {loading &&
+              [1, 2, 3, 4, 5].map((n) => (
+                <tr key={n}>
+                  <td className="px-4 py-3" colSpan={5}>
+                    <Skeleton className="h-4 w-full" />
+                  </td>
+                </tr>
+              )
             )}
             {!loading && students.length === 0 && (
               <tr>

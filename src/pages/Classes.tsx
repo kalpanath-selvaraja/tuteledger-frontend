@@ -8,6 +8,7 @@ import {
   type ClassInput,
   type ClassItem
 } from "../service/classes"
+import Skeleton from "../components/Skeleton"
 
 const DAYS = [
   "Monday",
@@ -221,12 +222,14 @@ function Classes() {
           </thead>
 
           <tbody>
-            {loading && (
-              <tr>
-                <td colSpan={isTutor ? 5 : 4} className="px-4 py-3 text-slate-600">
-                  Loading...
-                </td>
-              </tr>
+            {loading &&
+              [1, 2, 3, 4, 5].map((n) => (
+                <tr key={n}>
+                  <td className="px-4 py-3" colSpan={isTutor ? 5 : 4}>
+                    <Skeleton className="h-4 w-full" />
+                  </td>
+                </tr>
+              )
             )}
 
             {!loading && classes.length === 0 && (
