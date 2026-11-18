@@ -8,6 +8,7 @@ import useAuth from "../hooks/useAuth"
 import Classes from "../pages/Classes"
 import Students from "../pages/Students"
 import StudentDetail from "../pages/StudentDetail"
+import Staff from "../pages/Staff"
 
 
 type RequireAuthTypes = {
@@ -82,6 +83,15 @@ function AppRouter() {
           element={
             <RequireAuth>
               <StudentDetail />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/staff"
+          element={
+            <RequireAuth roles={["tutor"]}>
+              <Staff />
             </RequireAuth>
           }
         />
