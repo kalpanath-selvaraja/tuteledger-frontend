@@ -33,15 +33,15 @@ function Students() {
   const [phone, setPhone] = useState("")
   const [status, setStatus] = useState<"active" | "inactive">("active")
 
-  const loadStudents = async (p: number, s: string) => {
+  const loadStudents = async (pageNumber: number, searchTerm: string) => {
     try {
-      const res = await getStudents(s, p, PAGE_SIZE)
-      const data: StudentPage = res.data
+      const response = await getStudents(searchTerm, pageNumber, PAGE_SIZE)
+      const data: StudentPage = response.data
       setStudents(data.students)
       setTotalPages(data.totalPages)
       setTotal(data.total)
-    } catch (err) {
-      console.error(err)
+    } catch (error) {
+      console.error(error)
       alert("Could not load students..!")
     } finally {
       setLoading(false)
@@ -71,12 +71,12 @@ function Students() {
     setStatus("active")
   }
 
-  const handleEdit = (s: Student) => {
-    setEditingId(s.id)
-    setName(s.name)
-    setGuardianName(s.guardianName)
-    setPhone(s.phone)
-    setStatus(s.status)
+  const handleEdit = (student: Student) => {
+    setEditingId(student.id)
+    setName(student.name)
+    setGuardianName(student.guardianName)
+    setPhone(student.phone)
+    setStatus(student.status)
   }
 
   const handleSubmit = async () => {
@@ -108,9 +108,9 @@ function Students() {
 
       await loadStudents(page, appliedSearch)
 
-    } catch (err) {
+    } catch (error) {
 
-      showError(err, "Save fail..!")
+      showError(error, "Save fail..!")
     }
   }
 
@@ -128,27 +128,27 @@ function Students() {
             placeholder="student name"
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(event) => setName(event.target.value)}
             className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
           />
           <input
             placeholder="guardian name"
             type="text"
             value={guardianName}
-            onChange={(e) => setGuardianName(e.target.value)}
+            onChange={(event) => setGuardianName(event.target.value)}
             className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
           />
           <input
             placeholder="phone, for example 0771234567"
             type="text"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(event) => setPhone(event.target.value)}
             className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
           />
           {editingId && isTutor && (
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value as "active" | "inactive")}
+              onChange={(event) => setStatus(event.target.value as "active" | "inactive")}
               className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             >
               <option value="active">Active</option>
@@ -180,9 +180,9 @@ function Students() {
           placeholder="search by name"
           type="text"
           value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
+          onChange={(event) => setSearchText(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
               handleSearch()
             }
           }}
@@ -232,30 +232,30 @@ function Students() {
                 </td>
               </tr>
             )}
-            {students.map((s) => {
+            {students.map((student) => {
               return (
-                <tr key={s.id} className="border-t border-emerald-50">
+                <tr key={student.id} className="border-t border-emerald-50">
                   <td className="px-4 py-2 whitespace-nowrap">
-                    <Link to={`/students/${s.id}`} className="text-emerald-700 hover:underline">
-                      {s.name}
+                    <Link to={`/students/${student.id}`} className="text-emerald-700 hover:underline">
+                      {student.name}
                     </Link>
                   </td>
-                  <td className="px-4 py-2">{s.guardianName}</td>
-                  <td className="px-4 py-2">{s.phone}</td>
+                  <td className="px-4 py-2">{student.guardianName}</td>
+                  <td className="px-4 py-2">{student.phone}</td>
                   <td className="px-4 py-2">
                     <span
                       className={
                         "rounded-full px-2.5 py-1 text-xs font-semibold " +
-                        (s.status === "active" ? "bg-emerald-100 text-emerald-800" : "bg-stone-200 text-stone-700")
+                        (student.status === "active" ? "bg-emerald-100 text-emerald-800" : "bg-stone-200 text-stone-700")
                       }
                     >
-                      {s.status === "active" ? "Active" : "Inactive"}
+                      {student.status === "active" ? "Active" : "Inactive"}
                     </span>
                   </td>
                   <td className="px-4 py-2">
                     <button
                       className="text-emerald-700 hover:underline"
-                      onClick={() => handleEdit(s)}
+                      onClick={() => handleEdit(student)}
                     >
                       Edit
                     </button>

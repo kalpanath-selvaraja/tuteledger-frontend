@@ -36,11 +36,11 @@ function Staff() {
 
       resetForm()
 
-    } catch (err) {
+    } catch (error) {
 
       // 400 sends a list of messages, 409 (email taken) sends one message
 
-      showError(err, "Could not create the account..!")
+      showError(error, "Could not create the account..!")
     } finally {
       setSaving(false)
     }
@@ -64,7 +64,7 @@ function Staff() {
           placeholder="name"
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(event) => setName(event.target.value)}
           className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
         />
         <input
@@ -72,7 +72,7 @@ function Staff() {
           type="email"
           autoComplete="off"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(event) => setEmail(event.target.value)}
           className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
         />
         <input
@@ -80,7 +80,7 @@ function Staff() {
           type="password"
           autoComplete="new-password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(event) => setPassword(event.target.value)}
           className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
         />
 

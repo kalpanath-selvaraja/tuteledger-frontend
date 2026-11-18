@@ -18,11 +18,11 @@ function Home() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [classRes, studentRes] = await Promise.all([getClasses(), getStudents("", 1, 1)])
-        setClasses(classRes.data)
-        setStudentCount(studentRes.data.total)
-      } catch (err) {
-        console.error(err)
+        const [classResponse, studentResponse] = await Promise.all([getClasses(), getStudents("", 1, 1)])
+        setClasses(classResponse.data)
+        setStudentCount(studentResponse.data.total)
+      } catch (error) {
+        console.error(error)
         alert("Could not load the home page..!")
       } finally {
         setLoading(false)
@@ -48,7 +48,7 @@ function Home() {
   const activeClasses = classes.filter((todayClass) => todayClass.active)
   const todayClasses = activeClasses
     .filter((todayClass) => todayClass.dayOfWeek === today)
-    .sort((a, b) => a.startTime.localeCompare(b.startTime))
+    .sort((firstClass, secondClass) => firstClass.startTime.localeCompare(secondClass.startTime))
 
   return (
     <div className="flex flex-col gap-4">

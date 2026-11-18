@@ -37,10 +37,10 @@ function Classes() {
 
   const loadClasses = async () => {
     try {
-      const res = await getClasses()
-      setClasses(res.data)
-    } catch (err) {
-      console.error(err)
+      const response = await getClasses()
+      setClasses(response.data)
+    } catch (error) {
+      console.error(error)
       alert("Could not load classes..!")
     } finally {
       setLoading(false)
@@ -62,14 +62,14 @@ function Classes() {
     setShowInputs(false)
   }
 
-  const handleEdit = (c: ClassItem) => {
-    setEditingId(c.id)
-    setName(c.name)
-    setSubject(c.subject)
-    setDayOfWeek(c.dayOfWeek)
-    setStartTime(c.startTime)
-    setFee(String(c.monthlyFeeLKR))
-    setActive(c.active)
+  const handleEdit = (classItem: ClassItem) => {
+    setEditingId(classItem.id)
+    setName(classItem.name)
+    setSubject(classItem.subject)
+    setDayOfWeek(classItem.dayOfWeek)
+    setStartTime(classItem.startTime)
+    setFee(String(classItem.monthlyFeeLKR))
+    setActive(classItem.active)
     setShowInputs(true)
   }
 
@@ -94,10 +94,10 @@ function Classes() {
       }
       resetForm()
       await loadClasses()
-    } catch (err) {
-      console.error(err)
-      if (axios.isAxiosError(err) && err.response?.data?.errors) {
-        alert(err.response.data.errors.join("\n"))
+    } catch (error) {
+      console.error(error)
+      if (axios.isAxiosError(error) && error.response?.data?.errors) {
+        alert(error.response.data.errors.join("\n"))
       } else {
         alert("Save fail..!")
       }
@@ -113,7 +113,7 @@ function Classes() {
           </h1>
           <p className="mt-1 text-sm text-slate-600">
             {classes.length} {classes.length === 1 ? "class" : "classes"} &middot;{" "}
-            {classes.filter((c) => c.active).length} active
+            {classes.filter((classItem) => classItem.active).length} active
           </p>
         </div>
 
@@ -141,19 +141,19 @@ function Classes() {
               placeholder="name"
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(event) => setName(event.target.value)}
               className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             />
             <input
               placeholder="subject"
               type="text"
               value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              onChange={(event) => setSubject(event.target.value)}
               className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             />
             <select
               value={dayOfWeek}
-              onChange={(e) => setDayOfWeek(e.target.value)}
+              onChange={(event) => setDayOfWeek(event.target.value)}
               className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             >
               {DAYS.map((day) => {
@@ -167,14 +167,14 @@ function Classes() {
             <input
               type="time"
               value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
+              onChange={(event) => setStartTime(event.target.value)}
               className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             />
             <input
               placeholder="monthly fee (LKR)"
               type="number"
               value={fee}
-              onChange={(e) => setFee(e.target.value)}
+              onChange={(event) => setFee(event.target.value)}
               className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
             />
             {editingId && (
@@ -182,7 +182,7 @@ function Classes() {
                 <input
                   type="checkbox"
                   checked={active}
-                  onChange={(e) => setActive(e.target.checked)}
+                  onChange={(event) => setActive(event.target.checked)}
                 />
                 Active
               </label>
@@ -237,35 +237,35 @@ function Classes() {
               </tr>
             )}
 
-            {classes.map((c) => {
-              const [hour, minute] = c.startTime.split(":")
+            {classes.map((classItem) => {
+              const [hour, minute] = classItem.startTime.split(":")
               const hourNumber = Number(hour)
               const time = minute?.length === 2 && hourNumber >= 0 && hourNumber < 24
                 ? `${hourNumber % 12 || 12}:${minute} ${hourNumber < 12 ? "AM" : "PM"}`
-                : c.startTime
+                : classItem.startTime
 
               return (
-                <tr key={c.id} className="border-t border-[#e3e9e0]">
+                <tr key={classItem.id} className="border-t border-[#e3e9e0]">
                   <td className="px-4 py-2">
-                    <p className="font-bold">{c.name}</p>
-                    <p className="text-xs text-[#506259]">{c.subject}</p>
+                    <p className="font-bold">{classItem.name}</p>
+                    <p className="text-xs text-[#506259]">{classItem.subject}</p>
                   </td>
 
                   <td className="whitespace-nowrap px-4 py-2">
-                    {c.dayOfWeek} &middot; {time}
+                    {classItem.dayOfWeek} &middot; {time}
                   </td>
 
                   <td className="whitespace-nowrap px-4 py-2 text-right tabular-nums">
-                    Rs. {c.monthlyFeeLKR.toLocaleString()}
+                    Rs. {classItem.monthlyFeeLKR.toLocaleString()}
                   </td>
 
                   <td className="px-4 py-2">
                     <span className={
                       "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] font-semibold " +
-                      (c.active ? "bg-[#e7f2e5] text-[#315740]" : "bg-[#f1f0eb] text-[#59574d]")
+                      (classItem.active ? "bg-[#e7f2e5] text-[#315740]" : "bg-[#f1f0eb] text-[#59574d]")
                     }>
                       <span aria-hidden="true" className="h-[5px] w-[5px] rounded-full bg-current" />
-                      {c.active ? "Active" : "Inactive"}
+                      {classItem.active ? "Active" : "Inactive"}
                     </span>
                   </td>
 
@@ -274,7 +274,7 @@ function Classes() {
                       <button
                         type="button"
                         className="rounded-lg px-2.5 py-2 font-semibold text-[#255740] hover:bg-[#edf3e9]"
-                        onClick={() => handleEdit(c)}
+                        onClick={() => handleEdit(classItem)}
                       >
                         Edit
                       </button>

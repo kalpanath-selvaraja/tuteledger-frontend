@@ -12,19 +12,19 @@ function Login() {
     }
 
     try {
-      const res = await login(email, password)
+      const response = await login(email, password)
 
-      const resData = res.data
-      const accessToken = resData.accessToken
-      const refreshToken = resData.refreshToken
+      const loginData = response.data
+      const accessToken = loginData.accessToken
+      const refreshToken = loginData.refreshToken
       if (accessToken && refreshToken) {
         localStorage.setItem("ACCESS_TOKEN", accessToken)
         localStorage.setItem("REFRESH_TOKEN", refreshToken)
 
         window.location.href = "/"
       }
-    } catch (err) {
-      console.error(err)
+    } catch (error) {
+      console.error(error)
       alert("Login fail..!")
     }
   }
@@ -49,14 +49,14 @@ function Login() {
             placeholder="email"
             type="text"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
             className="px-4 py-2 h-[54px] border rounded-[10px] focus:outline-none focus:ring-2 focus:ring-emerald-600"
           />
           <input
             placeholder="password"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(event) => setPassword(event.target.value)}
             className="px-4 py-2 h-[54px] border rounded-[10px] focus:outline-none focus:ring-2 focus:ring-emerald-600"
           />
 

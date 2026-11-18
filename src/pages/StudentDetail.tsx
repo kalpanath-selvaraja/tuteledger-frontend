@@ -30,17 +30,17 @@ function StudentDetail() {
     }
 
     try {
-      const [studentRes, classesRes, enrollmentsRes] = await Promise.all([
+      const [studentResponse, classesResponse, enrollmentsResponse] = await Promise.all([
         getStudentById(id),
         getClasses(),
         getEnrollments(id)
       ])
-      setStudent(studentRes.data)
-      setClasses(classesRes.data)
-      setEnrollments(enrollmentsRes.data)
-      setLedgerVersion((v) => v + 1)
-    } catch (err) {
-      showError(err, "Could not load the student..!")
+      setStudent(studentResponse.data)
+      setClasses(classesResponse.data)
+      setEnrollments(enrollmentsResponse.data)
+      setLedgerVersion((currentVersion) => currentVersion + 1)
+    } catch (error) {
+      showError(error, "Could not load the student..!")
     } finally {
       setLoading(false)
     }
@@ -50,9 +50,9 @@ function StudentDetail() {
     loadAll()
   }, [id])
 
-  const enrolledClassIds = enrollments.map((e) => e.classId)
-  const availableClasses = classes.filter((c) => {
-    return c.active && !enrolledClassIds.includes(c.id)
+  const enrolledClassIds = enrollments.map((enrollment) => enrollment.classId)
+  const availableClasses = classes.filter((classItem) => {
+    return classItem.active && !enrolledClassIds.includes(classItem.id)
   })
 
   const handleEnroll = async () => {
@@ -65,8 +65,8 @@ function StudentDetail() {
       alert("Student enrolled.")
       setClassId("")
       await loadAll()
-    } catch (err) {
-      showError(err, "Enroll failed..!")
+    } catch (error) {
+      showError(error, "Enroll failed..!")
     }
   }
 
@@ -81,8 +81,8 @@ function StudentDetail() {
       setEndingId(null)
       setEndMonth("")
       await loadAll()
-    } catch (err) {
-      showError(err, "Could not end the enrollment..!")
+    } catch (error) {
+      showError(error, "Could not end the enrollment..!")
     }
   }
 
@@ -95,13 +95,13 @@ function StudentDetail() {
       await updateEnrollment(enrollmentId, null)
       alert("Enrollment reopened.")
       await loadAll()
-    } catch (err) {
-      showError(err, "Could not reopen the enrollment..!")
+    } catch (error) {
+      showError(error, "Could not reopen the enrollment..!")
     }
   }
 
   const getClassName = (classIdValue: string) => {
-    const found = classes.find((c) => c.id === classIdValue)
+    const found = classes.find((classItem) => classItem.id === classIdValue)
     return found ? found.name : "Unknown class"
   }
 
@@ -154,13 +154,13 @@ function StudentDetail() {
             <select
               className="w-full sm:flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
               value={classId}
-              onChange={(e) => setClassId(e.target.value)}
+              onChange={(event) => setClassId(event.target.value)}
             >
               <option value="">Choose a class</option>
-              {availableClasses.map((c) => {
+              {availableClasses.map((classItem) => {
                 return (
-                  <option key={c.id} value={c.id}>
-                    {c.name} (LKR {c.monthlyFeeLKR})
+                  <option key={classItem.id} value={classItem.id}>
+                    {classItem.name} (LKR {classItem.monthlyFeeLKR})
                   </option>
                 )
               })}
@@ -180,59 +180,59 @@ function StudentDetail() {
 
         {enrollments.length === 0 && <p className="text-sm text-slate-500">Not enrolled in any class.</p>}
 
-        {enrollments.map((e) => {
+        {enrollments.map((enrollment) => {
           return (
             <div
-              key={e.id}
+              key={enrollment.id}
               className="border border-emerald-100 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
             >
               <div>
-                <p className="font-semibold text-slate-900">{getClassName(e.classId)}</p>
+                <p className="font-semibold text-slate-900">{getClassName(enrollment.classId)}</p>
                 <p className="text-sm text-slate-600">
-                  From {e.startMonth} &middot;{" "}
+                  From {enrollment.startMonth} &middot;{" "}
                   <span
                     className={
                       "rounded-full px-2 py-0.5 text-xs font-semibold " +
-                      (e.endMonth ? "bg-stone-200 text-stone-700" : "bg-emerald-100 text-emerald-800")
+                      (enrollment.endMonth ? "bg-stone-200 text-stone-700" : "bg-emerald-100 text-emerald-800")
                     }
                   >
-                    {e.endMonth ? "Ended " + e.endMonth : "Active"}
+                    {enrollment.endMonth ? "Ended " + enrollment.endMonth : "Active"}
                   </span>
                 </p>
               </div>
 
               <div>
-                {isTutor && e.endMonth === null && endingId !== e.id && (
+                {isTutor && enrollment.endMonth === null && endingId !== enrollment.id && (
                   <button
                     className="text-rose-600 font-semibold hover:underline"
                     onClick={() => {
-                      setEndingId(e.id)
+                      setEndingId(enrollment.id)
                       setEndMonth("")
                     }}
                   >
                     End
                   </button>
                 )}
-                {isTutor && e.endMonth !== null && (
+                {isTutor && enrollment.endMonth !== null && (
                   <button
                     className="text-emerald-700 font-semibold hover:underline"
-                    onClick={() => handleReopen(e.id)}
+                    onClick={() => handleReopen(enrollment.id)}
                   >
                     Reopen
                   </button>
                 )}
-                {isTutor && endingId === e.id && (
+                {isTutor && endingId === enrollment.id && (
                   <div className="flex flex-wrap items-center gap-2">
                     <input
                       type="month"
                       className="px-2 py-1 border rounded-lg"
-                      min={e.startMonth}
+                      min={enrollment.startMonth}
                       value={endMonth}
-                      onChange={(ev) => setEndMonth(ev.target.value)}
+                      onChange={(event) => setEndMonth(event.target.value)}
                     />
                     <button
                       className="px-3 py-1 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition"
-                      onClick={() => handleEnd(e.id)}
+                      onClick={() => handleEnd(enrollment.id)}
                     >
                       Confirm
                     </button>
