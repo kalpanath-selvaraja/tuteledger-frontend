@@ -8,6 +8,7 @@ This repository is the **frontend** (React + TypeScript). The REST API is in a s
 |---|---|
 | Live frontend | https://tuteledger-frontend.vercel.app |
 | Live backend | https://tuteledger-backend.vercel.app (health check: `/api/health`) |
+| Second deployment (Render) | https://tuteledger-backend.onrender.com (same code and database, health check: `/api/health`) |
 | Frontend repository | https://github.com/kalpanath-selvaraja/tuteledger-frontend |
 | Backend repository | https://github.com/kalpanath-selvaraja/tuteledger-backend |
 
