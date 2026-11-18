@@ -39,6 +39,11 @@ function NavBar() {
             <NavLink to="/students" className={linkClass}>
               Students
             </NavLink>
+            {user?.role === "tutor" && (
+              <NavLink to="/staff" className={linkClass}>
+                Staff
+              </NavLink>
+            )}
           </div>
         </div>
 
@@ -75,6 +80,12 @@ function NavBar() {
           <NavLink to="/students" className={linkClass} onClick={() => setOpen(false)}>
             Students
           </NavLink>
+
+          {user?.role === "tutor" && (
+            <NavLink to="/staff" className={linkClass} onClick={() => setOpen(false)}>
+              Staff
+            </NavLink>
+          )}
           <p className="px-3 pt-2 text-sm text-emerald-100 capitalize">
             {user?.name} ({user?.role})
           </p>
