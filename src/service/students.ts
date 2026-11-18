@@ -24,22 +24,22 @@ export type StudentPage ={
 }
 
 export const getStudents = async (search: string, page: number, limit: number) => {
-   const res = await api.get("/students", {params: {search, page, limit}})
+   const response = await api.get("/students", {params: {search, page, limit}})
 
-   return res.data
+   return response.data
 }
 
 export const createStudent = async (input: StudentInput) => {
-  const res = await api.post("/students", input)
-  return res.data
+  const response = await api.post("/students", input)
+  return response.data
 }
 
 export const updateStudent = async (id: string, input: StudentInput) => {
-  const res = await api.put(`/students/${id}`, input)
-  return res.data
+  const response = await api.put(`/students/${id}`, input)
+  return response.data
 }
 
 export const getStudentById = async (id: string) => {
-  const res = await api.get(`/students/${id}`)
-  return res.data
+  const response = await api.get(`/students/${id}`)
+  return response.data
 }

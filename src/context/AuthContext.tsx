@@ -39,9 +39,9 @@ const AuthProvider = ({ children }: AuthProviderTypes) => {
       // setIsLoading(true)
       setLoading(true)
       getMyDetails()
-        .then((res) => {
-          if (res.data) {
-            setUser(res.data)
+        .then((response) => {
+          if (response.data) {
+            setUser(response.data)
           } else {
             setUser(null)
           }

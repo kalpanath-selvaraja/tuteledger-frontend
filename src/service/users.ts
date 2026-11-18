@@ -7,6 +7,6 @@ export type UserInput = {
 }
 
 export const createUser = async (input: UserInput) => {
-  const res = await api.post("/users", input)
-  return res.data
+  const response = await api.post("/users", input)
+  return response.data
 }

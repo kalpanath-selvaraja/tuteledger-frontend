@@ -49,11 +49,11 @@ export const monthLabel = (month: string) => {
   return MONTH_NAMES[Number(month.slice(5, 7)) - 1] + " " + month.slice(0, 4)
 }
 
-export const dateLabel = (iso: string | null) => {
-  return iso ? new Date(iso).toLocaleDateString("en-GB") : ""
+export const dateLabel = (dateString: string | null) => {
+  return dateString ? new Date(dateString).toLocaleDateString("en-GB") : ""
 }
 
 export const getLedger = async (studentId: string) => {
-  const res = await api.get(`/students/${studentId}/ledger`)
-  return res.data
+  const response = await api.get(`/students/${studentId}/ledger`)
+  return response.data
 }

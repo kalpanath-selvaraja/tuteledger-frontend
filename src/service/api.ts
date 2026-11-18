@@ -53,8 +53,8 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
 
         return axios(originalRequest)
-      } catch (err) {
-        console.error(err)
+      } catch (refreshError) {
+        console.error(refreshError)
         localStorage.removeItem("ACCESS_TOKEN")
         localStorage.removeItem("REFRESH_TOKEN")
         window.location.href = "/login"

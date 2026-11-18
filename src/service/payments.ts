@@ -7,16 +7,16 @@ export type PaymentItem = {
 
 
 export const createPayment = async (items: PaymentItem[]) => {
-  const res = await api.post("/payments", { items })
-  return res.data
+  const response = await api.post("/payments", { items })
+  return response.data
 }
 
 export const voidPayment = async (id: string, reason: string) => {
-  const res = await api.put(`/payments/${id}/void`, { reason })
-  return res.data
+  const response = await api.put(`/payments/${id}/void`, { reason })
+  return response.data
 }
 
 export const createWaiver = async (enrollmentId: string, months: string[], reason: string) => {
-  const res = await api.post("/waivers", { enrollmentId, months, reason })
-  return res.data
+  const response = await api.post("/waivers", { enrollmentId, months, reason })
+  return response.data
 }

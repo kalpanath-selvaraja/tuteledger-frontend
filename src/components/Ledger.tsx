@@ -34,10 +34,10 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
 
   const loadLedger = async () => {
     try {
-      const res = await getLedger(studentId)
-      setLedger(res.data)
-    } catch (err) {
-      showError(err, "Could not load the ledger..!")
+      const response = await getLedger(studentId)
+      setLedger(response.data)
+    } catch (error) {
+      showError(error, "Could not load the ledger..!")
     } finally {
       setLoading(false)
     }
@@ -50,7 +50,7 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
 
   const toggle = (key: string) => {
     if (selected.includes(key)) {
-      setSelected(selected.filter((k) => k !== key))
+      setSelected(selected.filter((selectedMonthKey) => selectedMonthKey !== key))
     } else {
       setSelected([...selected, key])
     }
@@ -59,10 +59,10 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
   // The total shown here is only a preview. The server works out the real amount.
   let selectedTotal = 0
   if (ledger) {
-    for (const classes of ledger.classes) {
-      for (const m of classes.months) {
-        if (selected.includes(classes.enrollmentId + "|" + m.month)) {
-          selectedTotal = selectedTotal + m.amountLKR
+    for (const ledgerClass of ledger.classes) {
+      for (const ledgerMonth of ledgerClass.months) {
+        if (selected.includes(ledgerClass.enrollmentId + "|" + ledgerMonth.month)) {
+          selectedTotal = selectedTotal + ledgerMonth.amountLKR
         }
       }
     }
@@ -80,12 +80,12 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
 
     setSaving(true)
     try {
-      const res = await createPayment(items)
-      alert("Payment recorded. Receipt " + res.data.receiptNo + ", total " + money(res.data.totalLKR))
+      const response = await createPayment(items)
+      alert("Payment recorded. Receipt " + response.data.receiptNo + ", total " + money(response.data.totalLKR))
       setSelected([])
       await loadLedger()
-    } catch (err) {
-      showError(err, "Could not record the payment..!")
+    } catch (error) {
+      showError(error, "Could not record the payment..!")
     } finally {
       setSaving(false)
     }
@@ -104,8 +104,8 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
       await voidPayment(paymentId, reason.trim())
       alert("Voided.")
       await loadLedger()
-    } catch (err) {
-      showError(err, "Could not void..!")
+    } catch (error) {
+      showError(error, "Could not void..!")
     }
   }
 
@@ -122,8 +122,8 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
       await createWaiver(enrollmentId, [month], reason.trim())
       alert("Month waived.")
       await loadLedger()
-    } catch (err) {
-      showError(err, "Could not waive..!")
+    } catch (error) {
+      showError(error, "Could not waive..!")
     }
   }
 
@@ -137,21 +137,21 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
 
   // One receipt = every paid month that shares a receipt number.
   const receipts: Receipt[] = []
-  for (const classes of ledger.classes) {
-    for (const m of classes.months) {
-      if (m.status !== "paid" || !m.receiptNo) {
+  for (const ledgerClass of ledger.classes) {
+    for (const ledgerMonth of ledgerClass.months) {
+      if (ledgerMonth.status !== "paid" || !ledgerMonth.receiptNo) {
         continue
       }
-      let receipt = receipts.find((r) => r.receiptNo === m.receiptNo)
+      let receipt = receipts.find((receipt) => receipt.receiptNo === ledgerMonth.receiptNo)
       if (!receipt) {
-        receipt = { receiptNo: m.receiptNo, paidOn: m.paidOn, total: 0, lines: [] }
+        receipt = { receiptNo: ledgerMonth.receiptNo, paidOn: ledgerMonth.paidOn, total: 0, lines: [] }
         receipts.push(receipt)
       }
-      receipt.total = receipt.total + m.amountLKR
-      receipt.lines.push({ label: classes.className + " - " + monthLabel(m.month), amountLKR: m.amountLKR })
+      receipt.total = receipt.total + ledgerMonth.amountLKR
+      receipt.lines.push({ label: ledgerClass.className + " - " + monthLabel(ledgerMonth.month), amountLKR: ledgerMonth.amountLKR })
     }
   }
-  receipts.sort((a, b) => (b.paidOn ?? "").localeCompare(a.paidOn ?? ""))
+  receipts.sort((firstReceipt, secondReceipt) => (secondReceipt.paidOn ?? "").localeCompare(firstReceipt.paidOn ?? ""))
 
   return (
     <div className="flex flex-col gap-4 pb-24 sm:pb-0">
@@ -187,32 +187,32 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
         </p>
       )}
 
-      {ledger.classes.map((classes) => {
+      {ledger.classes.map((ledgerClass) => {
         return (
-          <div key={classes.enrollmentId} className="bg-white border border-emerald-100 rounded-xl overflow-hidden">
+          <div key={ledgerClass.enrollmentId} className="bg-white border border-emerald-100 rounded-xl overflow-hidden">
             <div className="bg-emerald-50 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
               <div>
-                <p className="font-semibold text-emerald-950">{classes.className}</p>
+                <p className="font-semibold text-emerald-950">{ledgerClass.className}</p>
                 <p className="text-xs text-slate-600">
-                  {classes.subject} &middot; {money(classes.monthlyFeeLKR)} per month &middot; {monthLabel(classes.startMonth)} to{" "}
-                  {classes.endMonth ? monthLabel(classes.endMonth) : "now"}
+                  {ledgerClass.subject} &middot; {money(ledgerClass.monthlyFeeLKR)} per month &middot; {monthLabel(ledgerClass.startMonth)} to{" "}
+                  {ledgerClass.endMonth ? monthLabel(ledgerClass.endMonth) : "now"}
                 </p>
               </div>
               <p className="text-sm font-semibold text-amber-700">
-                {classes.outstandingLKR > 0 ? money(classes.outstandingLKR) + " owed" : "All settled"}
+                {ledgerClass.outstandingLKR > 0 ? money(ledgerClass.outstandingLKR) + " owed" : "All settled"}
               </p>
             </div>
 
             <ul>
-              {[...classes.months].reverse().map((m) => {
-                const key = classes.enrollmentId + "|" + m.month
+              {[...ledgerClass.months].reverse().map((ledgerMonth) => {
+                const key = ledgerClass.enrollmentId + "|" + ledgerMonth.month
                 return (
                   <li
-                    key={m.month}
+                    key={ledgerMonth.month}
                     className="border-t border-emerald-50 px-4 py-3 flex flex-wrap items-center gap-x-3 gap-y-2"
                   >
                     <div className="w-6">
-                      {m.status === "unpaid" && (
+                      {ledgerMonth.status === "unpaid" && (
                         <input
                           type="checkbox"
                           className="h-5 w-5 accent-emerald-600"
@@ -223,36 +223,36 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
                     </div>
 
                     <div className="flex-1 min-w-[140px]">
-                      <p className="font-medium text-slate-900">{monthLabel(m.month)}</p>
-                      {m.status === "paid" && (
+                      <p className="font-medium text-slate-900">{monthLabel(ledgerMonth.month)}</p>
+                      {ledgerMonth.status === "paid" && (
                         <p className="text-xs text-slate-500">
-                          {m.receiptNo} &middot; {dateLabel(m.paidOn)}
+                          {ledgerMonth.receiptNo} &middot; {dateLabel(ledgerMonth.paidOn)}
                         </p>
                       )}
-                      {m.status === "waived" && <p className="text-xs text-slate-500">{m.reason}</p>}
+                      {ledgerMonth.status === "waived" && <p className="text-xs text-slate-500">{ledgerMonth.reason}</p>}
                     </div>
 
-                    <span className={"rounded-full px-2.5 py-1 text-xs font-semibold " + BADGE[m.status]}>
-                      {BADGE_TEXT[m.status]}
+                    <span className={"rounded-full px-2.5 py-1 text-xs font-semibold " + BADGE[ledgerMonth.status]}>
+                      {BADGE_TEXT[ledgerMonth.status]}
                     </span>
 
                     <p className="w-24 text-right text-sm tabular-nums text-slate-700">
-                      {m.status === "waived" ? "-" : money(m.amountLKR)}
+                      {ledgerMonth.status === "waived" ? "-" : money(ledgerMonth.amountLKR)}
                     </p>
 
                     <div className="w-14 text-right">
-                      {isTutor && m.paymentId && (
+                      {isTutor && ledgerMonth.paymentId && (
                         <button
                           className="text-sm font-semibold text-red-600 hover:underline"
-                          onClick={() => handleVoid(m.paymentId as string, monthLabel(m.month))}
+                          onClick={() => handleVoid(ledgerMonth.paymentId as string, monthLabel(ledgerMonth.month))}
                         >
                           Void
                         </button>
                       )}
-                      {isTutor && m.status === "unpaid" && (
+                      {isTutor && ledgerMonth.status === "unpaid" && (
                         <button
                           className="text-sm font-semibold text-sky-700 hover:underline"
-                          onClick={() => handleWaive(classes.enrollmentId, m.month)}
+                          onClick={() => handleWaive(ledgerClass.enrollmentId, ledgerMonth.month)}
                         >
                           Waive
                         </button>
@@ -285,18 +285,18 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
       <div className="bg-white border border-emerald-100 rounded-xl p-4 flex flex-col gap-3">
         <h2 className="font-semibold text-emerald-950">Receipts</h2>
         {receipts.length === 0 && <p className="text-sm text-slate-500">No receipts yet.</p>}
-        {receipts.map((r) => {
+        {receipts.map((receipt) => {
           return (
-            <div key={r.receiptNo} className="border border-emerald-100 rounded-lg p-3">
+            <div key={receipt.receiptNo} className="border border-emerald-100 rounded-lg p-3">
               <div className="flex flex-wrap items-center justify-between gap-1">
-                <p className="font-semibold text-slate-900">{r.receiptNo}</p>
-                <p className="font-semibold text-emerald-700">{money(r.total)}</p>
+                <p className="font-semibold text-slate-900">{receipt.receiptNo}</p>
+                <p className="font-semibold text-emerald-700">{money(receipt.total)}</p>
               </div>
-              <p className="text-xs text-slate-500">{dateLabel(r.paidOn)}</p>
-              <p className="text-sm text-slate-700 mt-1">{r.lines.map((l) => l.label).join(", ")}</p>
+              <p className="text-xs text-slate-500">{dateLabel(receipt.paidOn)}</p>
+              <p className="text-sm text-slate-700 mt-1">{receipt.lines.map((receiptLine) => receiptLine.label).join(", ")}</p>
               <button
                 className="mt-2 text-sm font-semibold text-emerald-700 hover:underline"
-                onClick={() => downloadReceipt(ledger.student.name, r)}
+                onClick={() => downloadReceipt(ledger.student.name, receipt)}
               >
                 Download PDF
               </button>

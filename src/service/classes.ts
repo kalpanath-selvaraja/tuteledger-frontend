@@ -20,16 +20,16 @@ export type ClassInput = {
 }
 
 export const getClasses = async () => {
-  const res = await api.get("/classes")
-  return res.data
+  const response = await api.get("/classes")
+  return response.data
 }
 
 export const createClass = async (input: ClassInput) => {
-  const res = await api.post("/classes", input)
-  return res.data
+  const response = await api.post("/classes", input)
+  return response.data
 }
 
 export const updateClass = async (id: string, input: ClassInput) => {
-  const res = await api.put(`/classes/${id}`, input)
-  return res.data
+  const response = await api.put(`/classes/${id}`, input)
+  return response.data
 }

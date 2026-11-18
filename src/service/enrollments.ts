@@ -9,16 +9,16 @@ export type Enrollment = {
 }
 
 export const getEnrollments = async (studentId: string) => {
-  const res = await api.get("/enrollments", { params: { studentId } })
-  return res.data
+  const response = await api.get("/enrollments", { params: { studentId } })
+  return response.data
 }
 
 export const createEnrollment = async (studentId: string, classId: string) => {
-  const res = await api.post("/enrollments", { studentId, classId })
-  return res.data
+  const response = await api.post("/enrollments", { studentId, classId })
+  return response.data
 }
 
 export const updateEnrollment = async (id: string, endMonth: string | null) => {
-  const res = await api.put(`/enrollments/${id}`, { endMonth })
-  return res.data
+  const response = await api.put(`/enrollments/${id}`, { endMonth })
+  return response.data
 }
