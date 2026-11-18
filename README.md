@@ -50,8 +50,8 @@ The Tutor sees everything. The Receptionist cannot change fees, void payments, w
 | -------------------------------------- | ---------------------------------------- |
 | ![Login](screenshots/01-login.png)     | ![Home](screenshots/02-home.png)         |
 | ![Classes](screenshots/03-classes.png) | ![Students](screenshots/04-students.png) |
-| ![Ledger](screenshots/05-ledger.png)   | ![PDF receipt](screenshots/06-pdf.png)   |
-| ![Staff](screenshots/07-staff.png)     | ![Mobile](screenshots/08-mobile.png)     |
+| ![Ledger](screenshots/05-ledger.png)   | ![Ledger Tutor](screenshots/05-ledger-tutor.png)   |
+| ![Ledge receptionist](screenshots/05-ledger-receptionist.png)     | ![Staff](screenshots/08-mobile.png)     |
 
 ## Setup and run (frontend)
 
