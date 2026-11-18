@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import axios from "axios"
+import { showError } from "../utils/showError"
 import useAuth from "../hooks/useAuth"
 
 import {
@@ -110,14 +110,7 @@ function Students() {
 
     } catch (err) {
 
-      console.error(err)
-      if (axios.isAxiosError(err) && err.response?.data?.errors) {
-        alert(err.response.data.errors.join("\n"))
-      } else if (axios.isAxiosError(err) && err.response?.data?.message) {
-        alert(err.response.data.message)
-      } else {
-        alert("Save fail..!")
-      }
+      showError(err, "Save fail..!")
     }
   }
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
-import axios from "axios"
-import { getLedger, type Ledger as LedgerData } from "../service/ledger"
+import { showError } from "../utils/showError"
+import { dateLabel, getLedger, money, monthLabel, type Ledger as LedgerData, type Receipt } from "../service/ledger"
+import { downloadReceipt, downloadStatement } from "../service/pdf"
 import { createPayment, createWaiver, voidPayment } from "../service/payments"
 
 type LedgerProps = {
@@ -9,18 +10,7 @@ type LedgerProps = {
   version: number
 }
 
-const money = (value: number) => "Rs. " + value.toLocaleString()
 
-const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
-// "2026-11" becomes "Nov 2026"
-const monthLabel = (month: string) => {
-  return MONTH_NAMES[Number(month.slice(5, 7)) - 1] + " " + month.slice(0, 4)
-}
-
-const dateLabel = (iso: string | null) => {
-  return iso ? new Date(iso).toLocaleDateString("en-GB") : ""
-}
 
 const BADGE = {
   paid: "bg-emerald-100 text-emerald-800",
@@ -41,17 +31,6 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
   // every ticked month is stored as "enrollmentId|month"
   const [selected, setSelected] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
-
-  const showError = (err: unknown, fallback: string) => {
-    console.error(err)
-    if (axios.isAxiosError(err) && err.response?.data?.errors) {
-      return alert(err.response.data.errors.join("\n"))
-    }
-    if (axios.isAxiosError(err) && err.response?.data?.message) {
-      return alert(err.response.data.message)
-    }
-    alert(fallback)
-  }
 
   const loadLedger = async () => {
     try {
@@ -80,9 +59,9 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
   // The total shown here is only a preview. The server works out the real amount.
   let selectedTotal = 0
   if (ledger) {
-    for (const c of ledger.classes) {
-      for (const m of c.months) {
-        if (selected.includes(c.enrollmentId + "|" + m.month)) {
+    for (const classes of ledger.classes) {
+      for (const m of classes.months) {
+        if (selected.includes(classes.enrollmentId + "|" + m.month)) {
           selectedTotal = selectedTotal + m.amountLKR
         }
       }
@@ -157,9 +136,9 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
   }
 
   // One receipt = every paid month that shares a receipt number.
-  const receipts: { receiptNo: string; paidOn: string | null; total: number; lines: string[] }[] = []
-  for (const c of ledger.classes) {
-    for (const m of c.months) {
+  const receipts: Receipt[] = []
+  for (const classes of ledger.classes) {
+    for (const m of classes.months) {
       if (m.status !== "paid" || !m.receiptNo) {
         continue
       }
@@ -169,13 +148,24 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
         receipts.push(receipt)
       }
       receipt.total = receipt.total + m.amountLKR
-      receipt.lines.push(c.className + " - " + monthLabel(m.month))
+      receipt.lines.push({ label: classes.className + " - " + monthLabel(m.month), amountLKR: m.amountLKR })
     }
   }
   receipts.sort((a, b) => (b.paidOn ?? "").localeCompare(a.paidOn ?? ""))
 
   return (
     <div className="flex flex-col gap-4 pb-24 sm:pb-0">
+      
+      <div className="flex justify-end">
+        <button
+          className="px-4 py-2 border border-emerald-600 text-emerald-700 font-semibold rounded-lg hover:bg-emerald-50 transition"
+          onClick={() => downloadStatement(ledger)}
+        >
+          Download statement (PDF)
+        </button>
+      </div>
+
+
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="rounded-xl bg-emerald-600 text-white p-4">
           <p className="text-sm text-emerald-100">Paid so far</p>
@@ -197,25 +187,25 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
         </p>
       )}
 
-      {ledger.classes.map((c) => {
+      {ledger.classes.map((classes) => {
         return (
-          <div key={c.enrollmentId} className="bg-white border border-emerald-100 rounded-xl overflow-hidden">
+          <div key={classes.enrollmentId} className="bg-white border border-emerald-100 rounded-xl overflow-hidden">
             <div className="bg-emerald-50 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
               <div>
-                <p className="font-semibold text-emerald-950">{c.className}</p>
+                <p className="font-semibold text-emerald-950">{classes.className}</p>
                 <p className="text-xs text-slate-600">
-                  {c.subject} &middot; {money(c.monthlyFeeLKR)} per month &middot; {monthLabel(c.startMonth)} to{" "}
-                  {c.endMonth ? monthLabel(c.endMonth) : "now"}
+                  {classes.subject} &middot; {money(classes.monthlyFeeLKR)} per month &middot; {monthLabel(classes.startMonth)} to{" "}
+                  {classes.endMonth ? monthLabel(classes.endMonth) : "now"}
                 </p>
               </div>
               <p className="text-sm font-semibold text-amber-700">
-                {c.outstandingLKR > 0 ? money(c.outstandingLKR) + " owed" : "All settled"}
+                {classes.outstandingLKR > 0 ? money(classes.outstandingLKR) + " owed" : "All settled"}
               </p>
             </div>
 
             <ul>
-              {[...c.months].reverse().map((m) => {
-                const key = c.enrollmentId + "|" + m.month
+              {[...classes.months].reverse().map((m) => {
+                const key = classes.enrollmentId + "|" + m.month
                 return (
                   <li
                     key={m.month}
@@ -262,7 +252,7 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
                       {isTutor && m.status === "unpaid" && (
                         <button
                           className="text-sm font-semibold text-sky-700 hover:underline"
-                          onClick={() => handleWaive(c.enrollmentId, m.month)}
+                          onClick={() => handleWaive(classes.enrollmentId, m.month)}
                         >
                           Waive
                         </button>
@@ -303,7 +293,13 @@ function Ledger({ studentId, isTutor, version }: LedgerProps) {
                 <p className="font-semibold text-emerald-700">{money(r.total)}</p>
               </div>
               <p className="text-xs text-slate-500">{dateLabel(r.paidOn)}</p>
-              <p className="text-sm text-slate-700 mt-1">{r.lines.join(", ")}</p>
+              <p className="text-sm text-slate-700 mt-1">{r.lines.map((l) => l.label).join(", ")}</p>
+              <button
+                className="mt-2 text-sm font-semibold text-emerald-700 hover:underline"
+                onClick={() => downloadReceipt(ledger.student.name, r)}
+              >
+                Download PDF
+              </button>
             </div>
           )
         })}

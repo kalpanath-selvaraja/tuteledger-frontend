@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
-import axios from "axios"
+import { showError } from "../utils/showError"
 import useAuth from "../hooks/useAuth"
 import { getStudentById, type Student } from "../service/students"
 import { getClasses, type ClassItem } from "../service/classes"
@@ -23,17 +23,6 @@ function StudentDetail() {
 
   // Every time this number changes, the Ledger loads again
   const [ledgerVersion, setLedgerVersion] = useState(0)
-
-  const showError = (err: unknown, fallback: string) => {
-    console.error(err)
-    if (axios.isAxiosError(err) && err.response?.data?.errors) {
-      return alert(err.response.data.errors.join("\n"))
-    }
-    if (axios.isAxiosError(err) && err.response?.data?.message) {
-      return alert(err.response.data.message)
-    }
-    alert(fallback)
-  }
 
   const loadAll = async () => {
     if (!id) {

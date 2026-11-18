@@ -1,5 +1,5 @@
 import { useState } from "react"
-import axios from "axios"
+import { showError } from "../utils/showError"
 import { createUser } from "../service/users"
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -38,16 +38,9 @@ function Staff() {
 
     } catch (err) {
 
-      console.error(err)
       // 400 sends a list of messages, 409 (email taken) sends one message
 
-      if (axios.isAxiosError(err) && err.response?.data?.errors) {
-        alert(err.response.data.errors.join("\n"))
-      } else if (axios.isAxiosError(err) && err.response?.data?.message) {
-        alert(err.response.data.message)
-      } else {
-        alert("Could not create the account..!")
-      }
+      showError(err, "Could not create the account..!")
     } finally {
       setSaving(false)
     }
