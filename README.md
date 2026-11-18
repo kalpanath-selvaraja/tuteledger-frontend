@@ -40,18 +40,17 @@ The Tutor sees everything. The Receptionist cannot change fees, void payments, w
 - **Enrollments:** enroll a student in a class from the student page. The Tutor can end or reopen an enrollment.
 - **Ledger and payments:** every month of every class shows Paid, Waived or Unpaid. Tick unpaid months and record one payment, which makes one receipt.
 - **Void and waive (Tutor):** void a payment with a reason, or waive a month with a reason. Nothing is ever deleted.
-- **Staff page (Tutor):** create receptionist accounts.
+- **Staff page (Tutor):** view staff accounts, create receptionist accounts, and edit an account's name, email or password.
 - **PDF reports (advanced feature):** download a fee statement for a student, or a receipt for any payment, as a PDF. These give the guardian a second copy of proof that the tutor can reissue at any time.
 - **Loading skeletons and responsive design:** works on phone, tablet and desktop.
 
 ## Screenshots
 
-|                                        |                                          |
-| -------------------------------------- | ---------------------------------------- |
-| ![Login](screenshots/01-login.png)     | ![Home](screenshots/02-home.png)         |
-| ![Classes](screenshots/03-classes.png) | ![Students](screenshots/04-students.png) |
-| ![Ledger](screenshots/05-ledger.png)   | ![Ledger Tutor](screenshots/05-ledger-tutor.png)   |
-| ![Ledge receptionist](screenshots/05-ledger-receptionist.png)     | ![Staff](screenshots/08-mobile.png)     |
+|                                                                  |                                                      |
+| ---------------------------------------------------------------- | ---------------------------------------------------- |
+| ![Home](screenshots/02-home.png)                                 | ![Classes](screenshots/03-classes.png)               |
+| ![Students](screenshots/04-students.png)                         | ![Ledger](screenshots/05-ledger.png)                 |
+| ![Ledger (Tutor)](screenshots/05-ledger-tutor.png)               | ![Ledger (Receptionist)](screenshots/05-ledger-receptionist.png) |
 
 ## Setup and run (frontend)
 
@@ -71,7 +70,7 @@ VITE_API_URL=http://localhost:5000/api
 
 ```bash
 npm run dev       # http://localhost:5173
-npm run build     # type-check and production build
+npm run build     # type check and production build
 ```
 
 Vite reads `VITE_` variables at build time, so on Vercel the live API URL is set in the project's environment variables before building.
@@ -85,11 +84,11 @@ npm install
 cp .env.example .env      # on Windows: copy .env.example .env
 ```
 
-Fill in `.env`: `MONGO_URL` (MongoDB Atlas), `JWT_SECRET`, `JWT_REFRESH_SECRET` (a different value), `CORS_ORIGINS=http://localhost:5173`, and the `SEED_TUTOR_*` values. Then:
+Fill in `.env`: `MONGO_URL` (MongoDB Atlas), `JWT_SECRET`, `JWT_REFRESH_SECRET` (a different value), `CORS_ORIGINS=http://localhost:5173`, the `SEED_TUTOR_*` values and the `SEED_RECEPTIONIST_*` values. Then:
 
 ```bash
-npx tsx src/scripts/seed-tutor.ts     # creates the first Tutor account
-npm run dev                           # http://localhost:5000/api
+npm run seed      # creates the demo Tutor and Receptionist accounts if they do not exist
+npm run dev       # http://localhost:5000/api
 ```
 
 The backend allows one frontend origin per environment, so a local frontend must use a local backend. The full API summary and data model are in the backend README.
@@ -107,6 +106,7 @@ src/
   utils/        shared helpers
 ```
 
+
 ## Not in this version
 
 Attendance marking, a dashboard of collected and outstanding totals, partial payments, fee history, and student or parent login.
@@ -115,5 +115,3 @@ Attendance marking, a dashboard of collected and outstanding totals, partial pay
 
 - Tokens are kept in localStorage, so an injected script could read them. Hiding a button is only usability: the server's 401 and 403 responses are the real protection.
 - The PDF is generated in the browser from the ledger the server returned. It is a printout, not a signed document.
-
-
