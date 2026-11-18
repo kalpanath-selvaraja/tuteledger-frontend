@@ -1,25 +1,105 @@
-import { Link } from "react-router-dom"
+import { useEffect, useState } from "react"
 import useAuth from "../hooks/useAuth"
+import { getClasses, type ClassItem } from "../service/classes"
+import { getStudents } from "../service/students"
+
+// Today's weekday in Sri Lanka time, in the same words the classes part   use ("Monday")
+const getToday = () => {
+  return new Date().toLocaleDateString("en-US", { weekday: "long", timeZone: "Asia/Colombo" })
+}
 
 function Home() {
   const { user } = useAuth()
 
+  const [classes, setClasses] = useState<ClassItem[]>([])
+  const [studentCount, setStudentCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [classRes, studentRes] = await Promise.all([getClasses(), getStudents("", 1, 1)])
+        setClasses(classRes.data)
+        setStudentCount(studentRes.data.total)
+      } catch (err) {
+        console.error(err)
+        alert("Could not load the home page..!")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    load()
+  }, [])
+
+  if (loading) {
+    return <p className="text-slate-500">Loading...</p>
+  }
+
+  const today = getToday()
+  const dateText = new Date().toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Colombo"
+  })
+
+  const activeClasses = classes.filter((todayClass) => todayClass.active)
+  const todayClasses = activeClasses
+    .filter((todayClass) => todayClass.dayOfWeek === today)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime))
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-2xl bg-linear-to-r from-emerald-700 to-teal-500 p-6 sm:p-8 text-white">
-        <h1 className="text-2xl sm:text-3xl font-bold">Welcome, {user?.name}</h1>
-        <p className="mt-1 text-emerald-50 capitalize">You are signed in as {user?.role}.</p>
+      <div className="flex flex-wrap items-center justify-between gap-1 rounded-xl bg-emerald-800 px-4 py-3 text-white">
+        <p className="font-semibold">Welcome, {user?.name}</p>
+        <p className="text-sm text-emerald-100">{dateText}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Link to="/students" className="rounded-xl bg-sky-100 p-5 hover:bg-sky-200 transition">
-          <p className="text-lg font-semibold text-sky-900">Students</p>
-          <p className="text-sm text-sky-800">Register students, enroll them and record fee payments.</p>
-        </Link>
-        <Link to="/classes" className="rounded-xl bg-amber-100 p-5 hover:bg-amber-200 transition">
-          <p className="text-lg font-semibold text-amber-900">Classes</p>
-          <p className="text-sm text-amber-800">See the classes, their schedule and monthly fees.</p>
-        </Link>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="rounded-xl bg-emerald-600 text-white p-4">
+          <p className="text-sm text-emerald-100">Active classes</p>
+          <p className="text-3xl font-bold">{activeClasses.length}</p>
+        </div>
+        <div className="rounded-xl bg-sky-600 text-white p-4">
+          <p className="text-sm text-sky-100">Students registered</p>
+          <p className="text-3xl font-bold">{studentCount}</p>
+        </div>
+        <div className="rounded-xl bg-amber-500 text-white p-4">
+          <p className="text-sm text-amber-50">Classes today</p>
+          <p className="text-3xl font-bold">{todayClasses.length}</p>
+        </div>
+      </div>
+
+      <div className="bg-white border border-emerald-100 rounded-xl overflow-hidden">
+        <div className="bg-emerald-50 px-4 py-3">
+          <h2 className="font-semibold text-emerald-950">Today's classes ({today})</h2>
+        </div>
+
+        {todayClasses.length === 0 && (
+          <p className="px-4 py-6 text-sm text-slate-500">No classes are scheduled today.</p>
+        )}
+
+        <ul>
+          {todayClasses.map((todayClass) => {
+            return (
+              <li
+                key={todayClass.id}
+                className="border-t border-emerald-50 px-4 py-3 flex flex-wrap items-center justify-between gap-2"
+              >
+                <div>
+                  <p className="font-semibold text-slate-900">{todayClass.name}</p>
+                  <p className="text-xs text-slate-600">{todayClass.subject}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-emerald-900">{todayClass.startTime}</p>
+                  <p className="text-xs text-slate-600">Rs. {todayClass.monthlyFeeLKR.toLocaleString()} per month</p>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
       </div>
     </div>
   )
